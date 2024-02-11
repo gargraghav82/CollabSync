@@ -1,0 +1,74 @@
+.SignInBg{
+    height: 100vh;
+  width: 100%;
+  display: flex;
+
+  /* border-radius: 30% 70% 100% 0% / 0% 0% 100% 100%; */
+}
+
+.mainHead{
+    font-weight: bold;
+    font-size: 700;
+}
+
+.SignInBg-1{
+    background: #16213E;
+  
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  flex-basis: 50%;
+}
+
+.SignInBg-2{height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .auth-input{
+    width: 40%;
+    padding: 10px 20px;
+    border-radius: 10px;
+    outline: none;
+  }
+
+.signIn-button{
+    width: 20%;
+    background-color: #16213E;
+    border-radius: 15px;
+    padding: 10px 15px;
+    color: white;
+    text-align: center;
+    cursor: pointer;
+}
+
+.avatar-img{
+    height: 100px;
+}
+
+.title-signIn{
+    font-size: 400;
+    font-style: italic;
+    color: white;
+}
+
+.SignInBg-1{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+.desp1{
+    color: white;
+}
+
+.signUp-button{
+    background-color: white;
+    color: #16213E;
+}

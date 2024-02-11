@@ -1,0 +1,80 @@
+.videoRoomBg{
+    height: 100vh;
+    width: 100%;
+    background-color: #222831;
+    position: relative;
+}
+
+.videoRoomFooter{
+    /* background-color: #fff; */
+    width: 100%;
+    height: 70px;
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 70px;
+}
+
+.footer-icon{
+    border-radius: 50%;
+    border: 2px solid white;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+}
+
+.call-end{
+    border: 2px solid red;
+    background-color: red;
+    color: white;
+}
+
+.active-button{
+    border: 2px solid rgb(36, 105, 244);
+    background-color: rgb(36, 105, 244);
+    color: white;
+}
+
+.meeting-code{
+    color: white;
+    font-size: medium;
+    font-weight: 600;
+    justify-self: start;
+}
+
+.part-1{
+    flex-basis: 80%;
+    padding-left: 20px;
+}
+
+.part-3{
+    flex-basis: 80%;
+    display: flex;
+    flex-direction: row-reverse;
+    width: 100%;
+    padding-right: 20px;
+    gap: 30px;
+}
+
+.part-2{
+    flex-basis: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+.numb-icon{
+    position : relative;
+}
+
+.data-count{
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 1px;
+    color: white;
+    background-color: #222831;
+}
