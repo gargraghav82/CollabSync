@@ -1,0 +1,13 @@
+.footerSec{
+    width: full;
+    background-color: #182747;
+    padding: 5%;
+    box-sizing: border-box;
+}
+
+.title{
+    display: inline;
+    color: white;
+    font-weight :600;
+    font-style: italic;
+}

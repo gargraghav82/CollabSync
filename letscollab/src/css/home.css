@@ -1,0 +1,128 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+.home {
+  height: 100vh;
+  width: 100%;
+  background: rgb(238, 174, 202);
+  background: radial-gradient(
+    circle,
+    rgba(238, 174, 202, 1) 0%,
+    rgba(148, 187, 233, 1) 100%
+  );
+  box-sizing: border-box;
+  border-radius: 30% 70% 100% 0% / 0% 0% 100% 100%;
+}
+
+.homeMain {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  height: 90%;
+  width: 100%;
+}
+
+.mainHead {
+  font-size: 700;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.desp {
+  color: rgba(128, 128, 128, 0.744);
+  padding-right: 20%;
+  font-weight: 600;
+}
+
+.subPart {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.textPart {
+  padding: 0% 0% 0% 6%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 30px;
+  height: 80%;
+  flex-basis :100%;
+}
+
+.meet-buttons {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+}
+
+.host-button {
+  color: white;
+  padding: 10px 20px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 10px;
+  cursor: pointer;
+  display: grid;
+  place-self: center;
+  border: 3px solid rgba(0, 0, 0, 0.8);
+}
+
+.input-code {
+  outline: none;
+  border: 3px solid rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  height: 100%;
+  font-size: medium;
+  box-sizing: border-box;
+  padding: 0px 8px;
+}
+
+.imgPart {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 80%;
+  flex-basis :100%;
+}
+
+.indexImg {
+  height: 80%;
+}
+
+.input-code-area{
+  /* display: flex;
+  flex-direction: column;
+  gap: 5px; */
+}
+
+.warning{
+  color: red;
+  padding-left: 10px;
+}
+
+.indexImg:hover {
+  /* Start the shake animation and make the animation last for 0.5 seconds */
+  animation: shake 0.5s;
+
+  /* When the animation is finished, start again */
+  animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+  0% { transform: translate(1px, 1px) rotate(0deg); }
+  10% { transform: translate(-1px, -2px) rotate(-1deg); }
+  20% { transform: translate(-3px, 0px) rotate(1deg); }
+  30% { transform: translate(3px, 2px) rotate(0deg); }
+  40% { transform: translate(1px, -1px) rotate(1deg); }
+  50% { transform: translate(-1px, 2px) rotate(-1deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(3px, 1px) rotate(-1deg); }
+  80% { transform: translate(-1px, -1px) rotate(1deg); }
+  90% { transform: translate(1px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
