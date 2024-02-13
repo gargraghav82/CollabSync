@@ -1,13 +1,36 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../css/Auth.css'
 import User_Avatar from '../assests/img/user_avatar.png'
+import {useDispatch, useSelector } from 'react-redux'
+import { login } from '../redux/actions/authActions'
+import toast from 'react-hot-toast'
 
 const SignIn = () => {
     const [email , setEmail] = useState('');
     const [password , setPassword] = useState('');
+    const dispatch = useDispatch();
+    
+    const { message, error} = useSelector(
+        state => state.authReducer
+      );
+
+
+      useEffect(() => {
+        if (error) {
+            console.log(error);
+          toast.error(error);
+          dispatch({ type: 'clearError' });
+        }
+    
+        if (message) {
+          console.log(message);
+          toast.success(message);
+          dispatch({ type: 'clearMessage' });
+        }
+      }, [error, message]);
 
     const signIn = () => {
-
+        dispatch(login(email , password));
     }
 
   return (

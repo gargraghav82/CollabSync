@@ -9,6 +9,9 @@ import {
 } from "react-router-dom";
 import SignUp from './pages/SignUp';
 import VideoRoom from './pages/VideoRoom';
+import { store } from './redux/store';
+import { Provider } from 'react-redux';
+import { Toaster } from 'react-hot-toast';
 
 const router = createBrowserRouter([
   {
@@ -32,9 +35,11 @@ const router = createBrowserRouter([
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
+  <Provider store={store}>
     <RouterProvider router={router}/>
-  </React.StrictMode>
+    <Toaster />
+  </Provider>,
+  
 );
 
 // If you want to start measuring performance in your app, pass a function

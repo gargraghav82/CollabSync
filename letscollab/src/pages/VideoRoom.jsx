@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/VideoRoom.css";
 import { FiMic, FiMicOff } from "react-icons/fi";
 import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
@@ -10,7 +10,19 @@ import { IoPeople } from "react-icons/io5";
 import { LuMessagesSquare } from "react-icons/lu";
 import { useLocation } from "react-router-dom";
 
+// Import the Socket.IO client library
+import { io } from 'socket.io-client';
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+
+// Connect to the Socket.IO server
+
+
+
 const VideoRoom = () => {
+  const { user } = useSelector(
+    state => state.authReducer
+  );
   const button = [
     <FiMic />,
     <IoVideocamOutline />,
@@ -28,6 +40,20 @@ const VideoRoom = () => {
 
   // Get specific query parameters
   const meetingCode = queryParams.get('meetingCode');
+  
+
+  useEffect(() => {
+    const socket = io('http://localhost:4000');
+    console.log(socket);
+    socket.emit('join-room' , meetingCode , user?.name);
+    socket.on('user-connected' , name => {
+      toast.success( name + "joined")
+    })
+  } , [user])
+
+  useEffect(() => {
+    console.log(user)
+  } , [user]);
 
 
   return (
