@@ -12,6 +12,8 @@ config({
     path : './config/.env'
 })
 
+app.use(cookieParser());
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -48,10 +50,9 @@ const io = new SocketIOServer(server, {
 
 io.on('connection' , (socket) => {
   console.log("A User Connected");
-  console.log("socket : " + socket);
-  socket.on('join-room' , (roomId , name) => {
+  socket.on('join-room' , (roomId) => {
     socket.join(roomId);
-    socket.to(roomId).emit('user-connected' , name);
+    socket.to(roomId).emit('user-connected');
   })
 
   socket.on('disconnect', () => {

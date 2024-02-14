@@ -10,25 +10,6 @@ const SignUp = () => {
     const [email , setEmail] = useState('');
     const [password , setPassword] = useState('');
     const dispatch = useDispatch();
-    
-    const { message, error} = useSelector(
-        state => state.authReducer
-      );
-
-
-      useEffect(() => {
-        if (error) {
-            console.log(error);
-          toast.error(error);
-          dispatch({ type: 'clearError' });
-        }
-    
-        if (message) {
-          console.log(message);
-          toast.success(message);
-          dispatch({ type: 'clearMessage' });
-        }
-      }, [error, message]);
 
     const signUp = () => {
         dispatch(register(email , name , password));

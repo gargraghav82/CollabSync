@@ -30,17 +30,14 @@ User.pre("save" , async function(next){
 })
 
 User.methods.comparePassword = async function(password){
-    console.log(password , this.password);
     const isMatch = await bcrypt.compare(password , this.password);
     return isMatch;
 }
 
-User.methods.getJWTtoken = async function(){
-    return jwt.sign({
-        _id : this._id
-    } , process.env.JWT_SECRET , {
-        expiresIn : "15d"
-    })
-}
+User.methods.getJWTToken = function () {
+    return jwt.sign({ _id: this._id }, process.env.JWT_SECRET, {
+      expiresIn: "15d",
+    });
+  };
 
 export const user = mongoose.model("User", User);

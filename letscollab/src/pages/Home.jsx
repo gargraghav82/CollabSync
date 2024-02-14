@@ -5,7 +5,7 @@ import img from "../assests/img/videoConf1.png";
 import Footer from "../comp/Footer";
 import { useNavigate } from "react-router-dom"
 
-const Home = () => {
+const Home = ({isAuthenticated}) => {
   const [meetingCode, setMeetingCode] = useState("");
   const [incorrectCode , setIncorrectCode] = useState(false);
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const Home = () => {
 
   return (
     <div className="home">
-      <NavBar />
+      <NavBar/>
       <div className="homeMain">
         <div className="textPart">
           <h1 className="mainHead">Online Meeting Platform For Modern Work</h1>

@@ -44,6 +44,18 @@ export const register = (email , name , password) => async dispatch => {
       const { data } = await axios.get(`${server}/me`, { withCredentials: true });
       dispatch({ type: 'loadUserSuccess', payload: data });
     } catch (error) {
+      console.log(error);
       dispatch({ type: 'loadUserFail', payload: error.response.data.message });
+    }
+  };
+
+  export const userLogOut = () => async dispatch => {
+    try {
+      dispatch({ type: 'logOutRequest' });
+      const { data } = await axios.delete(`${server}/logout`, { withCredentials: true });
+      dispatch({ type: 'logOutSuccess', payload: data });
+    } catch (error) {
+      console.log(error);
+      dispatch({ type: 'logOutFail', payload: error.response.data.message });
     }
   };

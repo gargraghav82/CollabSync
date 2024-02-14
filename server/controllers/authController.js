@@ -49,3 +49,27 @@ export const userRegister = async (req, res) => {
     return res.status(500).json("Interval Server Error");
   }
 };
+
+export const loadUser = async (req, res) => {
+  const user = req.user;
+
+  return res.status(200).json({
+    success : true , 
+    user
+  });
+};
+
+export const userLogOut = async (req, res) => {
+  res
+    .status(200)
+    .cookie("token", null, {
+      expires: new Date(Date.now()),
+      sameSite: "none",
+      httpOnly: true,
+      secure: true,
+    })
+    .json({
+      success: true,
+      message: "Logged Out successfully",
+    });
+};

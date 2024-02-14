@@ -1,6 +1,6 @@
 export const sendToken = (res, user, message, status = 200) => {
   try{
-    const token = user.getJWTtoken();
+    const token = user.getJWTToken();
 
   const options = {
     expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
@@ -15,7 +15,7 @@ export const sendToken = (res, user, message, status = 200) => {
     user,
   });
 
-  res.sendStatus(status);
+  res.status(status);
   }catch(error){
     console.log(error);
   }

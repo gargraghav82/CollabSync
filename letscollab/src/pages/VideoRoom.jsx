@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import "../css/VideoRoom.css";
 import { FiMic, FiMicOff } from "react-icons/fi";
 import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
-import { TbPresentationOff, TbPresentation } from "react-icons/tb";
-import { HiOutlineHandRaised, HiOutlineHand } from "react-icons/hi2";
+import {TbPresentation } from "react-icons/tb";
+import { HiOutlineHandRaised} from "react-icons/hi2";
 import { MdCallEnd } from "react-icons/md";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { IoPeople } from "react-icons/io5";
@@ -13,13 +13,16 @@ import { useLocation } from "react-router-dom";
 // Import the Socket.IO client library
 import { io } from 'socket.io-client';
 import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { loadUser } from "../redux/actions/authActions";
+import { connectToSocket } from "../socket/SocketEvent";
 
 // Connect to the Socket.IO server
 
 
 
 const VideoRoom = () => {
+  const dispatch = useDispatch();
   const { user } = useSelector(
     state => state.authReducer
   );
@@ -40,20 +43,28 @@ const VideoRoom = () => {
 
   // Get specific query parameters
   const meetingCode = queryParams.get('meetingCode');
+  const { message, error} = useSelector(
+    state => state.authReducer
+  );
+
+  useEffect(() => {
+    if (error) {
+        console.log(error);
+      toast.error(error);
+      dispatch({ type: 'clearError' });
+    }
+
+    if (message) {
+      console.log(message);
+      toast.success(message);
+      dispatch({ type: 'clearMessage' });
+    }
+  }, [error, message , dispatch]);
   
 
   useEffect(() => {
-    const socket = io('http://localhost:4000');
-    console.log(socket);
-    socket.emit('join-room' , meetingCode , user?.name);
-    socket.on('user-connected' , name => {
-      toast.success( name + "joined")
-    })
-  } , [user])
-
-  useEffect(() => {
-    console.log(user)
-  } , [user]);
+    connectToSocket(meetingCode);
+  } , [dispatch])
 
 
   return (
