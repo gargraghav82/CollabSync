@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import authReducers from './reducers/authReducers'
+import { webRTCReducer } from './reducers/webRTCReducers'
 
 
 export const store = configureStore({
   reducer: {
-    authReducer : authReducers
+    authReducer : authReducers ,
+    webRTCReducer : webRTCReducer
   },
 })
 

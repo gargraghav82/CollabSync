@@ -1,10 +1,28 @@
-import toast from "react-hot-toast";
-import { io } from "socket.io-client";
+// socketService.js
+import io from 'socket.io-client';
 
-export const connectToSocket = (meetingCode) => {
-    const socket = io('http://localhost:4000');
-      socket.emit('join-room' , meetingCode);
-      socket.on('user-connected' , name => {
-        toast.success("A New User Joined");
-      })
-}
+const socket = io('http://localhost:4000');
+
+const socketService = {
+  connect: () => {
+    socket.connect();
+  },
+
+  disconnect: () => {
+    socket.disconnect();
+  },
+
+  on: (eventName, callback) => {
+    socket.on(eventName, callback);
+  },
+
+  off: (eventName, callback) => {
+    socket.off(eventName, callback);
+  },
+
+  emit: (eventName, ...data) => {
+    socket.emit(eventName, ...data);
+  },
+};
+
+export default socketService;

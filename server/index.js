@@ -6,6 +6,9 @@ import { config } from "dotenv";
 import bodyParser from "body-parser";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors"
+import { isAuthenticated } from "./middleware/isAuthenticated.js";
+import { createRoom, joinRoom, notifyConnectionInit, signalHandler } from "./controllers/meetingController.js";
+const map = new Map();
 
 const app = express();
 config({
@@ -34,6 +37,7 @@ app.use(
   }),
 );
 
+//app.use(isAuthenticated);
 app.use("/api/v1" , authRoutes);
 
 const server = app.listen(4000 , (PORT) => {
@@ -48,11 +52,29 @@ const io = new SocketIOServer(server, {
   },
 });
 
-io.on('connection' , (socket) => {
+io.on('connection' , (socket , user) => {
   console.log("A User Connected");
-  socket.on('join-room' , (roomId) => {
-    socket.join(roomId);
-    socket.to(roomId).emit('user-connected');
+  socket.join(socket.id)
+  
+  socket.on('add-detail' , (user) => {
+    socket.user = user;
+  })
+
+  socket.on('create-room' , (meetingCode) => {
+    createRoom(meetingCode , socket.user._id , socket.id , map);
+  })
+
+  socket.on('join-room' , (meetingCode) => {
+    //console.log('times');
+    joinRoom(meetingCode , socket.user._id , socket.id , socket);
+  })
+
+  socket.on('conn-init' , (data) => {
+    notifyConnectionInit(socket , data);
+  })
+
+  socket.on('conn-signal' , (data) => {
+    signalHandler(socket , data);
   })
 
   socket.on('disconnect', () => {

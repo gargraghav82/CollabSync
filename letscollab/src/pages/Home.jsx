@@ -1,19 +1,39 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../css/home.css";
 import NavBar from "../comp/NavBar";
 import img from "../assests/img/videoConf1.png";
 import Footer from "../comp/Footer";
 import { useNavigate } from "react-router-dom"
+import socketService from "../socket/SocketEvent";
+import { useDispatch, useSelector } from "react-redux";
+import { loadUser } from "../redux/actions/authActions";
 
 const Home = ({isAuthenticated}) => {
   const [meetingCode, setMeetingCode] = useState("");
   const [incorrectCode , setIncorrectCode] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(loadUser());
+  } , [])
+
+  const {user} = useSelector(state => state.authReducer);
 
   const enterAMeet = () => {
-    setMeetingCode('');
     setIncorrectCode(true);
     navigate(`/collab?meetingCode=${meetingCode}`);
+
+    // connect to the socket
+    socketService.connect();
+    socketService.emit('add-detail' , user);
+
+    // join the room on server
+    socketService.emit('join-room' , meetingCode);
+
+    
+
+    setMeetingCode('');
   };
 
   const createNewMeet = () => {
@@ -24,6 +44,11 @@ const Home = ({isAuthenticated}) => {
       newCode += str[rand];
     }
     navigate(`/collab?meetingCode=${newCode}`);
+
+
+    socketService.connect();
+    socketService.emit('add-detail' , user);
+    socketService.emit('create-room' , newCode);
   }
 
   return (

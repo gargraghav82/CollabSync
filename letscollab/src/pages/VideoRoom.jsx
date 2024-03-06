@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "../css/VideoRoom.css";
 import { FiMic, FiMicOff } from "react-icons/fi";
 import { IoVideocamOutline, IoVideocamOffOutline } from "react-icons/io5";
@@ -8,24 +8,57 @@ import { MdCallEnd } from "react-icons/md";
 import { PiDotsThreeOutlineVerticalFill } from "react-icons/pi";
 import { IoPeople } from "react-icons/io5";
 import { LuMessagesSquare } from "react-icons/lu";
-import { useLocation } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 
-// Import the Socket.IO client library
-import { io } from 'socket.io-client';
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { loadUser } from "../redux/actions/authActions";
-import { connectToSocket } from "../socket/SocketEvent";
+import { addAnswer, connectToSocket, createAnswer, createSocket, getLocalStreamPreview, handleMessageFromPeer, prepareForNewPeerConnection, signalingHandler } from "../webRTC/webRTC";
+import { handlePeerJoined} from "../webRTC/webRTC";
+import socketService from "../socket/SocketEvent";
+import VideoBox from "../comp/VideoBox";
+import { leaveRoom } from "../webRTC/webRTC"
 
 // Connect to the Socket.IO server
+let localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false});
 
 
 
 const VideoRoom = () => {
   const dispatch = useDispatch();
-  const { user } = useSelector(
-    state => state.authReducer
-  );
+  const [micOn, setMicOn] = useState(false);
+  const [videoOn, setVideoOn] = useState(false);
+  const [isHandRaised, setIsHandRaised] = useState(false);
+  const [isPresented, setIsPresented] = useState(false);
+
+  useEffect(() => {
+    getLocalStreamPreview(videoOn);
+  } , [videoOn])
+
+  useEffect(() => {
+    socketService.on('conn-pre' , (data) => {
+      const {newUserSocketId} = data;
+      prepareForNewPeerConnection(newUserSocketId , false);
+      socketService.emit("conn-init" , {
+        newUserSocketId
+      })
+    })
+
+    socketService.on('conn-init' , (data) => {
+      const {connUserSocketId} = data;
+      prepareForNewPeerConnection(connUserSocketId , true);
+    })
+
+    socketService.on('conn-signal' , (data) => {
+      signalingHandler(data);
+    })
+  })
+
+
+  const [parmas] = useSearchParams();
+  const meetingCode = parmas.get('meetingCode');
+
+  const {localStream } = useSelector(state => state.webRTCReducer);
+  
   const button = [
     <FiMic />,
     <IoVideocamOutline />,
@@ -33,16 +66,11 @@ const VideoRoom = () => {
     <HiOutlineHandRaised />,
     <MdCallEnd />,
   ];
-  const [micOn, setMicOn] = useState(false);
-  const [videoOn, setVideoOn] = useState(false);
-  const [isHandRaised, setIsHandRaised] = useState(false);
-  const [isPresented, setIsPresented] = useState(false);
-  const location = useLocation();
 
-  const queryParams = new URLSearchParams(location.search);
+  
+  
 
-  // Get specific query parameters
-  const meetingCode = queryParams.get('meetingCode');
+  
   const { message, error} = useSelector(
     state => state.authReducer
   );
@@ -60,15 +88,13 @@ const VideoRoom = () => {
       dispatch({ type: 'clearMessage' });
     }
   }, [error, message , dispatch]);
-  
-
-  useEffect(() => {
-    connectToSocket(meetingCode);
-  } , [dispatch])
 
 
   return (
     <div className="videoRoomBg">
+      <div>
+      <VideoBox stream={localStream} isLocalStream={true}/>
+    </div>
       <VideoRoomFooter
         button={button}
         videoOn={videoOn}
@@ -97,6 +123,7 @@ const VideoRoomFooter = ({
   setIsHandRaised,
   meetingCode
 }) => {
+  const dispatch = useDispatch();
   return (
     <div className="videoRoomFooter">
       <div className="part-1">
@@ -158,7 +185,7 @@ const VideoRoomFooter = ({
 
         <PiDotsThreeOutlineVerticalFill className="footer-icon" size={25} />
 
-        <MdCallEnd className="footer-icon call-end" size={25} />
+        <MdCallEnd className="footer-icon call-end" size={25} onClick={() => leaveRoom()}/>
       </div>
       <div className="part-3">
         <div className="numb-icon">
