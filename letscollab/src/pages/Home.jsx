@@ -4,9 +4,11 @@ import NavBar from "../comp/NavBar";
 import img from "../assests/img/videoConf1.png";
 import Footer from "../comp/Footer";
 import { useNavigate } from "react-router-dom"
-import socketService from "../socket/SocketEvent";
+import socketService, { socket } from "../socket/SocketEvent";
 import { useDispatch, useSelector } from "react-redux";
 import { loadUser } from "../redux/actions/authActions";
+import { store } from "../redux/store";
+import { setMyPeer } from "../webRTC/webRTC";
 
 const Home = ({isAuthenticated}) => {
   const [meetingCode, setMeetingCode] = useState("");
@@ -16,6 +18,8 @@ const Home = ({isAuthenticated}) => {
 
   useEffect(() => {
     dispatch(loadUser());
+    
+    
   } , [])
 
   const {user} = useSelector(state => state.authReducer);
@@ -27,9 +31,11 @@ const Home = ({isAuthenticated}) => {
     // connect to the socket
     socketService.connect();
     socketService.emit('add-detail' , user);
+    
 
     // join the room on server
     socketService.emit('join-room' , meetingCode);
+    setMyPeer(socket.id);
 
     
 
@@ -49,6 +55,7 @@ const Home = ({isAuthenticated}) => {
     socketService.connect();
     socketService.emit('add-detail' , user);
     socketService.emit('create-room' , newCode);
+    setMyPeer(socket.id);
   }
 
   return (

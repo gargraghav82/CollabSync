@@ -1,7 +1,8 @@
 import { store } from "../redux/store";
-import { setLocalStream } from "../redux/actions/webRTCActions";
-import Peer from 'simple-peer'
+import {Peer} from 'peerjs'
 import socketService from "../socket/SocketEvent";
+let myPeer;
+let peers = {};
 
 const defaultConstraints = {
     video : true , 
@@ -28,6 +29,26 @@ const getConfiguration = () => {
     }
 }
 
+export const setMyPeer = (socketId) => {
+    myPeer = new Peer(socketId);
+    console.log(socketId , "my socket ID");
+    const localStream = store.getState().webRTCReducer.localStream;
+    myPeer.on('open' , () => {
+        myPeer.on('call', function(call) {
+            call.answer(localStream);
+            //myPeer.call(call.peer , store.getState().webRTCReducer.localStream); // Answer the call with an A/V stream.
+            call.on('stream', function(remoteStream) {
+                console.log(remoteStream);
+            });
+        });
+    })
+
+    
+
+    
+    
+}
+
 
 
 export const getLocalStreamPreview = (onlyAudio , callbackFunc) => {
@@ -42,18 +63,26 @@ export const getLocalStreamPreview = (onlyAudio , callbackFunc) => {
     })
 }
 
-export const leaveRoom = () => {
+export const leaveRoom = (meetingCode) => {
     const localStream = store.getState().webRTCReducer.localStream;
 
     if(localStream){
         localStream.getTracks().forEach((track) => track.stop());
         store.dispatch({ type: 'setLocalStream', payload: null})
+        socketService.emit('conn-leaving');
     }
 }
 
-let peers = {};
+export const deletePeer = (userSocketId) => {
+    if(peers[userSocketId]){
+        peers[userSocketId].close();
+        delete peers[userSocketId];
+    }
+}
 
-export const prepareForNewPeerConnection = (newUserSocketId , isInitiator) => {
+
+
+export const prepareForNewPeerConnection = async (userSocketIds , isInitiator) => {
     const localStream = store.getState().webRTCReducer.localStream;
 
     if(isInitiator){
@@ -62,37 +91,25 @@ export const prepareForNewPeerConnection = (newUserSocketId , isInitiator) => {
         console.log("Preparing not as initiator");
     }
 
-    peers[newUserSocketId] = new Peer({
-        initiator : isInitiator ,
-        config : getConfiguration() ,
-        stream : localStream
-    });
+    //console.log(userSocketIds);
 
-    peers[newUserSocketId].on('signal' , data => {
-        const signalData = {
-            signal : data ,
-            connUserSocketId : newUserSocketId
-        }
-
-        socketService.emit('conn-signal' , signalData);
-
-        // signal data to other users
+    userSocketIds.forEach(async (ele) => {
+        console.log(ele);
+        myPeer.on('open' , () => {
+            const call =  myPeer.call(ele , store.getState().webRTCReducer.localStream);
+            console.log(call);
+            call.on('stream', function(stream) {
+                console.log(stream);
+            });
+        })
+        
     })
 
-    
-
-    peers[newUserSocketId].on('stream' , remoteStream => {
-        // add remote stream to store
-        console.log(remoteStream);
-    })
-
+   
 }
 
 export const signalingHandler = (data) => {
     const {signal , connUserSocketId} = data;
-
-    if(peers[connUserSocketId]){
-        peers[connUserSocketId].signal(signal);
-    }
+    
 }
 

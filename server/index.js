@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import { Server as SocketIOServer } from "socket.io";
 import cors from "cors"
 import { isAuthenticated } from "./middleware/isAuthenticated.js";
-import { createRoom, joinRoom, notifyConnectionInit, signalHandler } from "./controllers/meetingController.js";
+import { connLeaving, createRoom, joinRoom, notifyConnectionInit, signalHandler } from "./controllers/meetingController.js";
 const map = new Map();
 
 const app = express();
@@ -58,6 +58,8 @@ io.on('connection' , (socket , user) => {
   
   socket.on('add-detail' , (user) => {
     socket.user = user;
+    console.log(socket.id);
+    socket.to(socket.id).emit('welcome' , socket.id);
   })
 
   socket.on('create-room' , (meetingCode) => {
@@ -65,8 +67,7 @@ io.on('connection' , (socket , user) => {
   })
 
   socket.on('join-room' , (meetingCode) => {
-    //console.log('times');
-    joinRoom(meetingCode , socket.user._id , socket.id , socket);
+    joinRoom(meetingCode , socket.user?._id , socket.id , socket);
   })
 
   socket.on('conn-init' , (data) => {
@@ -75,6 +76,10 @@ io.on('connection' , (socket , user) => {
 
   socket.on('conn-signal' , (data) => {
     signalHandler(socket , data);
+  })
+
+  socket.on('conn-leaving' , (meetingCode) => {
+    connLeaving(meetingCode , socket);
   })
 
   socket.on('disconnect', () => {

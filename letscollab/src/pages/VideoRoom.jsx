@@ -12,11 +12,12 @@ import { useLocation, useSearchParams } from "react-router-dom";
 
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { addAnswer, connectToSocket, createAnswer, createSocket, getLocalStreamPreview, handleMessageFromPeer, prepareForNewPeerConnection, signalingHandler } from "../webRTC/webRTC";
+import { addAnswer, connectToSocket, createAnswer, createSocket, deletePeer, getLocalStreamPreview, handleMessageFromPeer, prepareForNewPeerConnection, signalingHandler } from "../webRTC/webRTC";
 import { handlePeerJoined} from "../webRTC/webRTC";
 import socketService from "../socket/SocketEvent";
 import VideoBox from "../comp/VideoBox";
 import { leaveRoom } from "../webRTC/webRTC"
+
 
 // Connect to the Socket.IO server
 let localStream = await navigator.mediaDevices.getUserMedia({video:true, audio:false});
@@ -35,22 +36,62 @@ const VideoRoom = () => {
   } , [videoOn])
 
   useEffect(() => {
-    socketService.on('conn-pre' , (data) => {
-      const {newUserSocketId} = data;
-      prepareForNewPeerConnection(newUserSocketId , false);
-      socketService.emit("conn-init" , {
-        newUserSocketId
+    socketService.on('conn-pre' , (UserSocketIds) => {
+      console.log("Caught");
+      prepareForNewPeerConnection(UserSocketIds , false);
+    })
+
+    // socketService.on('conn-init' , (data) => {
+    //   const {connUserSocketId} = data;
+    //   prepareForNewPeerConnection(connUserSocketId , true);
+    // })
+
+    // socketService.on('conn-signal' , (data) => {
+    //   signalingHandler(data);
+    // })
+
+    socketService.on('conn-leaving' , (data) => {
+      const {UserSocketId} = data;
+      deletePeer(UserSocketId);
+    })
+
+    const handleBeforeUnload = (event) => {
+      // Your code here
+      // For example, you might want to show a confirmation message
+      const confirmationMessage = 'Are you sure you want to leave?';
+      (event || window.event).returnValue = confirmationMessage; // Standard
+      return confirmationMessage; // For some older browsers
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      socketService.off('conn-pre' , (data) => {
+        const {newUserSocketId} = data;
+        prepareForNewPeerConnection(newUserSocketId , false);
+        socketService.emit("conn-init" , {
+          newUserSocketId
+        })
       })
-    })
+  
+      socketService.off('conn-init' , (data) => {
+        const {connUserSocketId} = data;
+        prepareForNewPeerConnection(connUserSocketId , true);
+      })
 
-    socketService.on('conn-init' , (data) => {
-      const {connUserSocketId} = data;
-      prepareForNewPeerConnection(connUserSocketId , true);
-    })
+      socketService.off('conn-signal' , (data) => {
+        signalingHandler(data);
+      })
 
-    socketService.on('conn-signal' , (data) => {
-      signalingHandler(data);
-    })
+      socketService.off('conn-leaving' , (data) => {
+        const {UserSocketId} = data;
+        deletePeer(UserSocketId);
+      })
+      
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    }
+
+    
   })
 
 

@@ -9,11 +9,6 @@ import { useEffect } from 'react';
 import { loadUser } from './redux/actions/authActions';
 import toast from 'react-hot-toast';
 
-
-
-
-
-
 function App() {
 
   const {isAuthenticated} = useSelector(state => state.authReducer);

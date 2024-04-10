@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import { store } from './redux/store';
 import { Provider } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
+import "./setup";
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
